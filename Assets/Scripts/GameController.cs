@@ -10,6 +10,9 @@ public class GameController : MonoBehaviour {
     public Text gameOverText;
     public GameObject restartButton;
     public bool playAgainstComputer = true;
+    public int rows = 3;
+    public int columns = 3;
+    
     
     private int moveCount;
     private string playerSide;
@@ -20,7 +23,7 @@ public class GameController : MonoBehaviour {
     
     
     private void Awake() {
-        buttonList2D = MakeBoard2D(buttonList, 3, 3);
+        buttonList2D = MakeBoard2D(buttonList, rows, columns);
         SetGameControllerRefOnButtons();
         playerSide = "X";
         computerSide = "O";
@@ -32,8 +35,8 @@ public class GameController : MonoBehaviour {
     }
 
     void SetGameControllerRefOnButtons() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 buttonList2D[i,j].GetComponentInParent<GridSpace>().SetGameControllerRef(this);
             }
         }
@@ -88,8 +91,8 @@ public class GameController : MonoBehaviour {
         gameOverPanel.SetActive(false);
         restartButton.SetActive(false);
         playerTurn = true;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 buttonList2D[i,j].text = "";
             }
         }
@@ -97,8 +100,8 @@ public class GameController : MonoBehaviour {
     }
 
     void SetBoardInteractable(bool toggle) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 buttonList2D[i,j].GetComponentInParent<Button>().interactable = toggle;
             }
         }

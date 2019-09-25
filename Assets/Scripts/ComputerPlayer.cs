@@ -9,17 +9,26 @@ public class ComputerPlayer : MonoBehaviour {
 	
 	private string player = "X";
 	private string computer = "O";
+	private GameController controller;
+	private int rows;
+	private int columns;
+	
+	private void Awake() {
+		controller = GetComponentInParent<GameController>();
+		rows = controller.rows;
+		columns = controller.columns;
+	}
 
 	bool IsMovesLeft(Text[,] board) {
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < columns; j++)
 				if (board[i, j].text == "")
 					return true;
 		return false;
 	}
 
 	int Evaluate(Text[,] board) {
-		for (int row = 0; row < 3; row++) {
+		for (int row = 0; row < rows; row++) {
 			if (board[row, 0].text == board[row, 1].text && board[row, 1].text == board[row, 2].text) {
 				if (board[row, 0].text == computer)
 					return 10;
@@ -28,7 +37,7 @@ public class ComputerPlayer : MonoBehaviour {
 			}
 		}
 
-		for (int col = 0; col < 3; col++) {
+		for (int col = 0; col < columns; col++) {
 			if (board[0, col].text == board[1, col].text && board[1, col].text == board[2, col].text) {
 				if (board[0, col].text == computer)
 					return 10;
@@ -67,8 +76,8 @@ public class ComputerPlayer : MonoBehaviour {
 		if (isMax) {
 			int best = -1000;
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
 					
 					if (board[i, j].text == "") {
 						board[i, j].text = computer;
@@ -85,8 +94,8 @@ public class ComputerPlayer : MonoBehaviour {
 		else {
 			int best = 1000;
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
 					
 					if (board[i, j].text == "") {
 						board[i, j].text = player;
@@ -109,8 +118,8 @@ public class ComputerPlayer : MonoBehaviour {
 		bestMove.col = -1;
 		
 		
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				if (board[i, j].text == "") {
 					board[i, j].text = computer;
 
