@@ -1,18 +1,18 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-public class ComputerPlayer : MonoBehaviour {
 
+public class ComputerPlayer : MonoBehaviour {
 	public struct Move {
 		public int row, col;
 	}
-	
+
 	private string player = "X";
 	private string computer = "O";
 	private GameController controller;
 	private int rows;
 	private int columns;
-	
+
 	private void Awake() {
 		controller = GetComponentInParent<GameController>();
 		rows = controller.rows;
@@ -28,40 +28,104 @@ public class ComputerPlayer : MonoBehaviour {
 	}
 
 	int Evaluate(Text[,] board) {
+		int computerCount = 0;
+		int playerCount = 0;
+		
 		for (int row = 0; row < rows; row++) {
-			if (board[row, 0].text == board[row, 1].text && board[row, 1].text == board[row, 2].text) {
+			
+			playerCount = 0;
+			computerCount = 0;
+			/*if (board[row, 0].text == board[row, 1].text && board[row, 1].text == board[row, 2].text) {
 				if (board[row, 0].text == computer)
 					return 10;
 				if (board[row, 0].text == player)
 					return -10;
+			}*/
+
+			for (int col = 0; col < columns; col++) {
+				if (board[row, col].text == computer)
+					computerCount++;
+				if (board[row, col].text == player)
+					playerCount++;
 			}
+
+			if (computerCount == columns)
+				return 10;
+			if (playerCount == columns)
+				return -10;
 		}
 
+		
+
 		for (int col = 0; col < columns; col++) {
-			if (board[0, col].text == board[1, col].text && board[1, col].text == board[2, col].text) {
+			
+			playerCount = 0;
+			computerCount = 0;
+			/*if (board[0, col].text == board[1, col].text && board[1, col].text == board[2, col].text) {
 				if (board[0, col].text == computer)
 					return 10;
 				else if (board[0, col].text == player)
 					return -10;
+			}*/
+
+			for (int row = 0; row < rows; row++) {
+				if (board[row, col].text == computer)
+					computerCount++;
+				if (board[row, col].text == player)
+					playerCount++;
 			}
-		}
-
-		if (board[0, 0].text == board[1, 1].text && board[1, 1].text == board[2, 2].text) {
-			if (board[0, 0].text == computer)
+ 
+			if (computerCount == rows)
 				return 10;
-			else if (board[0, 0].text == player)
+			if (playerCount == rows)
 				return -10;
 		}
 
-		if (board[0, 2].text == board[1, 1].text && board[1, 1].text == board[2, 0].text) {
-			if (board[0, 2].text == computer)
+		playerCount = 0;
+		computerCount = 0;
+		for (int row = 0; row < rows; row++) {
+			if (board[row, row].text == computer)
+				computerCount++;
+			if (board[row, row].text == player)
+				playerCount++;
+
+			if (computerCount == rows)
 				return 10;
-			else if (board[0, 2].text == player)
+			if (playerCount == rows)
 				return -10;
 		}
+		
+		playerCount = 0;
+		computerCount = 0;
+		for (int row = 0; row < rows; row++) {
+			if (board[row, (rows - 1) - row].text == computer)
+				computerCount++;
+			if (board[row, (rows - 1) - row].text == player)
+				playerCount++;
+
+			if (computerCount == rows)
+				return 10;
+			if (playerCount == rows)
+				return -10;
+		}
+		
+//		if (board[0, 0].text == board[1, 1].text && board[1, 1].text == board[2, 2].text) {
+//			if (board[0, 0].text == computer)
+//				return 10;
+//			else if (board[0, 0].text == player)
+//				return -10;
+//		}
+//
+//		if (board[0, 2].text == board[1, 1].text && board[1, 1].text == board[2, 0].text) {
+//			if (board[0, 2].text == computer)
+//				return 10;
+//			else if (board[0, 2].text == player)
+//				return -10;
+//		}
 
 		return 0;
 	}
+
 
 	int MinMax(Text[,] board, int depth, bool isMax) {
 		int score = Evaluate(board);
@@ -78,17 +142,13 @@ public class ComputerPlayer : MonoBehaviour {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					
 					if (board[i, j].text == "") {
 						board[i, j].text = computer;
-
 						best = Math.Max(best, MinMax(board, depth + 1, !isMax));
-
 						board[i, j].text = "";
 					}
 				}
 			}
-
 			return best;
 		}
 		else {
@@ -96,17 +156,13 @@ public class ComputerPlayer : MonoBehaviour {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					
 					if (board[i, j].text == "") {
 						board[i, j].text = player;
-
 						best = Math.Min(best, MinMax(board, depth + 1, !isMax));
-
 						board[i, j].text = "";
 					}
 				}
 			}
-
 			return best;
 		}
 	}
@@ -116,15 +172,12 @@ public class ComputerPlayer : MonoBehaviour {
 		Move bestMove;
 		bestMove.row = -1;
 		bestMove.col = -1;
-		
-		
+
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				if (board[i, j].text == "") {
 					board[i, j].text = computer;
-
 					int moveVal = MinMax(board, 0, false);
-
 					board[i, j].text = "";
 
 					if (moveVal > bestVal) {
