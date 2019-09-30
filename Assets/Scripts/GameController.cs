@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour {
 			GameOver(playerSide);
 		else if (IsGameWonBy(computerSide))
 			GameOver(computerSide);
-		else if (moveCount >= 9)
+		else if (moveCount >= rows*columns)
 			GameOver("draw");
 		else
 			ChangeSides();

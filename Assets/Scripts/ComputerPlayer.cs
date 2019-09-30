@@ -7,11 +7,15 @@ public class ComputerPlayer : MonoBehaviour {
 		public int row, col;
 	}
 
+
+	[SerializeField] private int maxDepth = 3;
 	private string player = "X";
 	private string computer = "O";
 	private GameController controller;
 	private int rows;
 	private int columns;
+	private const int MIN = -1000;
+	private const int MAX = 1000;
 
 	private void Awake() {
 		controller = GetComponentInParent<GameController>();
@@ -127,9 +131,10 @@ public class ComputerPlayer : MonoBehaviour {
 	}
 
 
-	int MinMax(Text[,] board, int depth, bool isMax) {
+	int MinMax(Text[,] board, int depth, bool isMax, int alpha, int beta) {
 		int score = Evaluate(board);
-
+		if (depth == maxDepth)
+			return score;
 		if (score == 10)
 			return score;
 		if (score == -10)
@@ -138,28 +143,39 @@ public class ComputerPlayer : MonoBehaviour {
 			return 0;
 
 		if (isMax) {
-			int best = -1000;
+			int best = MIN;
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
 					if (board[i, j].text == "") {
 						board[i, j].text = computer;
-						best = Math.Max(best, MinMax(board, depth + 1, !isMax));
+						int value = Math.Max(best, MinMax(board, depth + 1, !isMax, alpha, beta));
+						best = Math.Max(best, value);
+						alpha = Math.Max(alpha, best);
+						
 						board[i, j].text = "";
+						if (beta <= alpha)
+							break;
 					}
 				}
 			}
 			return best;
 		}
 		else {
-			int best = 1000;
+			int best = MAX;
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
 					if (board[i, j].text == "") {
 						board[i, j].text = player;
-						best = Math.Min(best, MinMax(board, depth + 1, !isMax));
+						int value = Math.Min(best, MinMax(board, depth + 1, !isMax, alpha, beta));
+						best = Math.Min(best, value);
+						beta = Math.Min(beta, best);
+						
 						board[i, j].text = "";
+
+						if (beta <= alpha)
+							break;
 					}
 				}
 			}
@@ -177,7 +193,7 @@ public class ComputerPlayer : MonoBehaviour {
 			for (int j = 0; j < columns; j++) {
 				if (board[i, j].text == "") {
 					board[i, j].text = computer;
-					int moveVal = MinMax(board, 0, false);
+					int moveVal = MinMax(board, 0, false, MIN, MAX);
 					board[i, j].text = "";
 
 					if (moveVal > bestVal) {
